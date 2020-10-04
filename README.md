@@ -6,3 +6,16 @@ Plasma diagnostics are crucial for projects like the International Thermonuclear
 The link for the dissertation can be found [here](https://run.unl.pt/handle/10362/89460).
 
 The final version inclues a periodic table and databases that contain elements other than Ar (Z=18), however, these were not done by me and therefore not in this repository.
+
+# Images
+Main window GUI:
+
+![Main window.](/Images/main_window.png?raw=true)
+
+Secondary windows with adjustable parameters:
+
+<img src="/Images/sec_windows.png" alt="Secondary windows" width="750"/>
+
+Simulated spectrum fitted over experimental data:
+
+![Best fit spectrum](/Images/best_fit_spectrum.png?raw=true)
