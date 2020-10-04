@@ -10,12 +10,12 @@ The final version inclues a periodic table and databases that contain elements o
 # Images
 Main window GUI:
 
-![Main window.](/Images/main_window.png?raw=true)
+![Main window.](/screenshots/main_window.png?raw=true)
 
 Secondary windows with adjustable parameters:
 
-<img src="/Images/sec_windows.png" alt="Secondary windows" width="750"/>
+<img src="/screenshots/sec_windows.png" alt="Secondary windows" width="750"/>
 
 Simulated spectrum fitted over experimental data:
 
-![Best fit spectrum](/Images/best_fit_spectrum.png?raw=true)
+![Best fit spectrum](/screenshots/best_fit_spectrum.png?raw=true)
