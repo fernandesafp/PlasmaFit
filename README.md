@@ -7,7 +7,7 @@ The link for the dissertation can be found [here](https://run.unl.pt/handle/1036
 
 The final version inclues a periodic table and databases that contain elements other than Ar (Z=18), however, these were not done by me and therefore not in this repository.
 
-# Images
+# GUI's
 Main GUI from PlasmaFit.py, highlighting four sections with the possible inputs from the user (See Figure 3.5 from my dissertation).
 
 ![Main GUI from PlastmaFit.py.](/screenshots/main_window.png?raw=true)
@@ -15,7 +15,7 @@ Main GUI from PlasmaFit.py, highlighting four sections with the possible inputs 
 
 Charge-state distribution GUI from PlasmaFit.py, showing the CSD the user can input. The “Add row” and “Delete row” buttons allow the user to insert or remove an ion. Any box checked in the “LM fixed” column fixes the parameter during the Levenberg-Marquardt calculation.
 
-<img src="/screenshots/cds_window.png" alt="Parameters GUI's from PlasmaFit.py." width="750"/>
+<img src="/screenshots/cds_window.png" alt="Parameters GUI's from PlasmaFit.py." width="350"/>
 
 
 Parameters GUI’s from PlasmaFit.py, showing the parameters the user can input. The two windows on the right side are shown in case no plotting is done, allowing the user to manually insert the parameters for the background noise and normalization. With a plot shown, the user can simply click on the coordinates instead.
