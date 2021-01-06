@@ -47,7 +47,7 @@ def spectrum_plot(hw_trans, cs_K_exc, cs_K_ion, cs_KL_ion, cs_KLL_ion,
                         xerr = hw_exp_err, fmt = 'none', ecolor='k',
                         elinewidth = 0.5, capsize = 1, zorder=1)
     except Exception as ex:
-      print('Could not load counts experimental error bars. Will be shown as zero. ' + ex)
+      print('Could not load count error bars. Will be shown as zero. ' + ex)
       counts_exp_err = np.ones(len(hw_exp))                                    #For chi2 display without errors
   else: exp_data = False
 

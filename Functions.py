@@ -85,14 +85,17 @@ def stat_prob(lsj_i, state):
 ground_states_list = ['1s1','1s2','1s2 2s1','1s2 2s2','1s2 2s2 2p1',
                       '1s2 2s2 2p2','1s2 2s2 2p3','1s2 2s2 2p4','1s2 2s2 2p5',
                       '1s2 2s2 2p6']
-def ground_state(state_exc, n):                                                #Check if ground state phase is possible with n ionizations (0 is excitation)
-  s = list(state_exc)
+def ground_state(state_exc, n):
+  '''Check if ground state phase is possible with n ionizations (0 is excitation)
 
-  '''All processes add one electron to the K-shell, if the first orbital gets
+  All processes add one electron to the K-shell, if the first orbital gets
   added an electron too much, then it's impossible to have it come from a
   ground state. Also the first orbital must be 1s1 at least. States such as
   1s2 2p1 are never considered i.e. adding a 2s orbital because it also is
-  impossible to come from a ground state'''
+  impossible to come from a ground state
+  '''
+
+  s = list(state_exc)
 
   s[2] = str(int(s[2])+1)                                                      #Adds an electron to the 1s orbital
   if int(s[2]) > 2 or s[1] != 's': return False                                #If we have something like 1s3 or not start with s orbital then it is impossible

@@ -30,24 +30,7 @@ def LM_spectrum_plot(hw_trans, cs_K_exc, cs_K_ion, cs_KL_ion, cs_KLL_ion,
     for i in ions:
       csd[i] = params['nq' + i]
 
-    #Not so quick but plots in real time
-    '''
-    spectrum_csd = spectrum_plot(hw_trans, cs_K_exc, cs_K_ion, cs_KL_ion,
-                                 cs_KLL_ion, spectrum, fig, csd, csv_file,
-                                 trans_file, stick_sim, scale, param_changed,
-                                 csd_changed, tf_changed, fraction_voigt,
-                                 width_gauss, width_loren, step, y0_method,
-                                 y0_m, y0_b, norm_method, norm_x, norm_y, hw0,
-                                 hw_min, hw_max, fraction_mw, kexc, kion,
-                                 klion, kllion, contributions, metastates)
-    result = []
-    for i in range(len(data[0])):
-      dif = abs(x - data[0][i])
-      n = np.argmin(dif)
-      result.append((data[1][i] - spectrum_csd[n]) / counts_exp_err[i])
-
-    '''
-    #Quicker to compute
+    #Uses lite as it is quicker to compute
     spectrum_csd = spectrum_plot_lite(data, counts_exp_err, data[0], y0,
                                       hw_trans, cs_K_exc, cs_K_ion, y,
                                       cs_KL_ion, cs_KLL_ion, csd, trans_file,
@@ -75,7 +58,9 @@ def LM_spectrum_plot(hw_trans, cs_K_exc, cs_K_ion, cs_KL_ion, cs_KLL_ion,
   counts_exp = data_exp[:,1]
   try:
     counts_exp_err = data_exp[:,3]
-  except: counts_exp_err = np.sqrt(counts_exp)
+  except Exception as ex:
+    print('Could not load count error bars. Will be shown as the square root of experimental counts. ' + ex)
+    counts_exp_err = np.sqrt(counts_exp)
 
   for i in range(len(hw_exp)):                                                 #Restrict exp data to domain
     if hw_exp[i] >= min(x):
@@ -106,7 +91,8 @@ def LM_spectrum_plot(hw_trans, cs_K_exc, cs_K_ion, cs_KL_ion, cs_KLL_ion,
         trans_f = len(hw_trans)-j
         break
     hw_trans = hw_trans[trans_i:trans_f]
-  except:                                                                      #If it cannot load the database it will warn the user
+  except Exception as ex:                                                      #If it cannot load the database it will warn the user
+    print('Could not load the transition energies database. ' + ex)
     messagebox.showerror('Transition energies database', 'The transition ener'+
                          'gies database was incorrectly loaded. The calculati'+
                          'on will stop.')
