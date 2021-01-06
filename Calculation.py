@@ -32,7 +32,6 @@ def spectrum_plot(hw_trans, cs_K_exc, cs_K_ion, cs_KL_ion, cs_KLL_ion,
     data_exp = np.genfromtxt(csv_file, delimiter = ',')
     hw_exp = data_exp[:,0]
     counts_exp = data_exp[:,1]
-    hw_exp
     spectrum.plot(hw_exp, counts_exp, 'ko', linewidth = .75, markersize = 3,
                   label = 'Experimental data', mfc='none')
 
@@ -47,7 +46,9 @@ def spectrum_plot(hw_trans, cs_K_exc, cs_K_ion, cs_KL_ion, cs_KLL_ion,
       spectrum.errorbar(hw_exp, counts_exp, yerr = counts_exp_err,
                         xerr = hw_exp_err, fmt = 'none', ecolor='k',
                         elinewidth = 0.5, capsize = 1, zorder=1)
-    except: counts_exp_err = np.ones(len(hw_exp))                              #For chi2 display without errors
+    except Exception as ex:
+      print('Could not load counts experimental error bars. Will be shown as zero. ' + ex)
+      counts_exp_err = np.ones(len(hw_exp))                                    #For chi2 display without errors
   else: exp_data = False
 
   x = np.arange(hw_min, hw_max, step)                                          #Domain arranged
@@ -75,7 +76,8 @@ def spectrum_plot(hw_trans, cs_K_exc, cs_K_ion, cs_KL_ion, cs_KLL_ion,
         trans_f = len(hw_trans)-j
         break
     hw_trans = hw_trans[trans_i:trans_f]
-  except:                                                                      #If it cannot load the database it will warn the user
+  except Exception as ex:                                                      #If it cannot load the database it will warn the user
+    print('Could not load the database. Exception: ' + ex)
     messagebox.showerror('Transition energies database', 'The transition ener'+
                          'gies database was incorrectly loaded. The calculati'+
                          'on will stop.')
@@ -124,8 +126,11 @@ def spectrum_plot(hw_trans, cs_K_exc, cs_K_ion, cs_KL_ion, cs_KLL_ion,
                               fraction_mw)
             hw = hw_trans[i,0]
             ty = hw_trans[i,4]
-            try: nq = csd.get(str(cs_K_exc[j,5])+'m') * 10**csd.get('power')
-            except: nq = 0
+            try:
+              nq = csd.get(str(cs_K_exc[j,5])+'m') * 10**csd.get('power')
+            except Exception as ex:
+              print('Could not obtain CSD. ' + ex)
+              nq = 0
 
             counts_K_exc.append(n_rate * hw * ty * nq)
             hw_K_exc.append(i)
@@ -384,25 +389,25 @@ def spectrum_plot(hw_trans, cs_K_exc, cs_K_ion, cs_KL_ion, cs_KLL_ion,
     #--------------------------------------------------------------------------
     if contributions:
       if kexc:
-        markerline,stemlines,baseline = (
+        markerline = (
             spectrum.stem(hw_trans[hw_K_exc, 0], counts_K_exc, bottom=None,
                           basefmt=' ', markerfmt='co',linefmt='c-',
                           label = 'K shell excitation contribution'))
         markerline.set_markerfacecolor('none')
       if kion:
-        markerline,stemlines,baseline = (
+        markerline = (
             spectrum.stem(hw_trans[hw_K_ion, 0], counts_K_ion, bottom=None,
                           basefmt=' ', markerfmt='bo',linefmt='b-',
                           label = 'K shell ionization contribution'))
         markerline.set_markerfacecolor('none')
       if klion:
-        markerline,stemlines,baseline = (
+        markerline = (
             spectrum.stem(hw_trans[hw_KL_ion, 0], counts_KL_ion, bottom=None,
                           basefmt=' ', markerfmt='go',linefmt='g-',
                           label = 'KL shells double ionization contribution'))
         markerline.set_markerfacecolor('none')
       if kllion:
-        markerline,stemlines,baseline = (
+        markerline = (
             spectrum.stem(hw_trans[hw_KLL_ion, 0], counts_KLL_ion, bottom=None,
                           basefmt=' ', markerfmt='yo',linefmt='y-',
                           label = 'KLL shells triple ionization contribution'))
@@ -455,7 +460,7 @@ def spectrum_plot(hw_trans, cs_K_exc, cs_K_ion, cs_KL_ion, cs_KLL_ion,
       for i in range(len(hw_stem)):                                            #Converts index values to the energies in the transition database
         hw_stem[i] = hw_trans[hw_stem[i], 0]
 
-      markerline,stemlines,baseline = (
+      markerline = (
           spectrum.stem(hw_stem, counts_stem, bottom=None, basefmt=' ',
                         markerfmt='ro',linefmt='r-', label = 'Stem plot'))
       markerline.set_markerfacecolor('none')
@@ -476,6 +481,5 @@ def spectrum_plot(hw_trans, cs_K_exc, cs_K_ion, cs_KL_ion, cs_KLL_ion,
   if scale == 'Log': spectrum.set_yscale('log')                                #If user input log
   fig.canvas.draw()
   #----------------------------------------------------------------------------
-  try: return spectrum_csd                                                     #Returns for Levenberg-Marquardt fit purposes
-  except: pass                                                                 #Sometimes it is not referenced so it passes
+  return spectrum_csd                                                          #Returns for Levenberg-Marquardt fit purposes
 #------------------------------------------------------------------------------

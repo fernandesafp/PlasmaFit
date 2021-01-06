@@ -60,8 +60,11 @@ def spectrum_plot_lite(data, counts_exp_err, x, y0, hw_trans, cs_K_exc,
                               fraction_mw)
             hw = hw_trans[i,0]
             ty = hw_trans[i,4]
-            try: nq = csd.get(str(cs_K_exc[j,5])) * 10**csd.get('power')       #Ion might not exist in dictionary, so it will only try
-            except: nq = 0
+            try:
+              nq = csd.get(str(cs_K_exc[j,5])) * 10**csd.get('power')          #Ion might not exist in dictionary, so it will only try
+            except Exception as ex:
+              print('Could not obtain CSD. ' + ex)
+              nq = 0
 
             counts_K_exc.append(n_rate * hw * ty * nq)                         #Append counts = n_rate * energy * transition yield * charge-state density
             hw_K_exc.append(i)                                                 #Append energy
