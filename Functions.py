@@ -94,9 +94,10 @@ def ground_state(state_exc, n):
   1s2 2p1 are never considered i.e. adding a 2s orbital because it also is
   impossible to come from a ground state
   '''
-  s = list(state_exc)
-  s[2] = str(int(s[2])+1)                                                      #Adds an electron to the 1s orbital
 
+  s = list(state_exc)
+
+  s[2] = str(int(s[2])+1)                                                      #Adds an electron to the 1s orbital
   if int(s[2]) > 2 or s[1] != 's': return False                                #If we have something like 1s3 or not start with s orbital then it is impossible
 
   if n == 0:                                                                   #Through excitation K
