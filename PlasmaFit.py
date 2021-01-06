@@ -256,7 +256,8 @@ if __name__ == "__main__":
           load_var.set(fname)
           choice_var.set('Sim.')                                               #It plots data if it isn't in stickplot mode
           plotting()
-        except:
+        except Exception as ex:
+          print('Could not open and plot file. ' + ex)
           messagebox.showerror('Invalid file.', 'It was not possible to open '+
                                'and plot {}.'.format(fname))
           return
@@ -269,7 +270,8 @@ if __name__ == "__main__":
           spectrum.plot(hw_exp, counts_exp, 'ko', linewidth = .75,
                         markersize = 3, label ='Experimental data', mfc='none',
                         zorder=1)
-        except:
+        except Exception as ex:
+          print('Could not open and plot file. ' + ex)
           messagebox.showerror('Invalid file.', 'It was not possible to open '+
                                'and plot {}.'.format(fname))
           return
@@ -280,7 +282,9 @@ if __name__ == "__main__":
           spectrum.errorbar(hw_exp, counts_exp, yerr = counts_exp_err,
                             xerr = hw_exp_err, fmt = 'none', ecolor='k',
                             elinewidth = 0.5, capsize = 1, zorder=1)
-        except: counts_exp_err = ones(len(hw_exp))                             #For chi2 display without errors
+        except Exception as ex:
+          print('Could not load count error bars. They will not be shown.' + ex)
+          counts_exp_err = ones(len(hw_exp))                                   #For chi2 display without errors
 
         load_var.set(fname)
 
@@ -358,8 +362,9 @@ if __name__ == "__main__":
             ask_plot()
 
         cid = f.canvas.mpl_connect('button_press_event', onclick)
-      except: messagebox.showerror('Error', 'Something went wrong with the of'+
-                                   'fset.')
+      except Exception as ex:
+        print('Exception thrown whilst obtaining/applying the offset.' + ex)
+        messagebox.showerror('Error', 'Something went wrong with the offset.')
 
     else:                                                                      #If there is no plot or no data, it opens a new window
       fields = ['m', 'b']
@@ -458,8 +463,10 @@ if __name__ == "__main__":
           ask_plot()
 
         cid = f.canvas.mpl_connect('button_press_event', onclick)
-      except: messagebox.showerror('Error', 'Something went wrong with the no'+
-                                   'rmalization.')
+      except Exception as ex:
+        print('Exception thrown whilst obtaining/applying normalization.' + ex)
+        messagebox.showerror('Error', 'Something went wrong with the normaliz'+
+                             'ation.')
 
     else:                                                                      #If no plot or exp data, it opens a window for input
       fields = ['x', 'y']
@@ -1000,17 +1007,17 @@ if __name__ == "__main__":
   ttk.Button(master=buttons_frame3, text='Help', command=_help
              ).pack(side=BOTTOM)
   ttk.Button(master=buttons_frame3, text='Export fit',
-             command=lambda:write_to_xls()).pack(side=BOTTOM)                  #To do
+             command=write_to_xls()).pack(side=BOTTOM)                  #To do
   ttk.Button(master=buttons_frame3, text='Intensity dist.', command=load_tf
              ).pack(side=BOTTOM)
   ttk.Button(master=buttons_frame3, text='Load exp. file', command=load_data
              ).pack(side=BOTTOM)
 
   ttk.Button(master=buttons_frame2, text='Calculate',
-             command=lambda:plotting(),style='red/black.TButton'
+             command=plotting(),style='red/black.TButton'
              ).pack(side=BOTTOM)
   ttk.Button(master=buttons_frame2, text='LM fit',
-             command=lambda: LM_plotting(), style= 'red/black.TButton'
+             command=LM_plotting(), style= 'red/black.TButton'
              ).pack(side=BOTTOM)
 
   ttk.Button(master=buttons_frame2, text='Clear plot', command = clear,
