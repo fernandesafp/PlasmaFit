@@ -74,7 +74,7 @@ def stat_prob(lsj_i, state):
   for i in range(n + 1):
     orbital.append(state[1 + 4*i] + state[2 + 4*i])
   sum_j = 1
-  for i in range(len(orbital)):
+  for i in enumerate(orbital):
     sum_j *= orb(orbital[i])
   return j_i/sum_j
 #------------------------------------------------------------------------------

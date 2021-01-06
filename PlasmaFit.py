@@ -765,7 +765,7 @@ if __name__ == "__main__":
         return                                                                 #Solved a loop messagebox error
       csd_changed.set(True)
 
-      for j in range(len(rows)):
+      for j in enumerate(rows):
         csd[val[3*j]] = val[3*j+1]
         fixed[val[3*j]] = val[3*j+2]
       ask_plot()
@@ -810,7 +810,7 @@ if __name__ == "__main__":
       fixeds = list(fixed_standard.values())
       rows = []
       power = []
-      for k in range(len(ions)):
+      for k in enumerate(ions):
         i=i+1
         items = []
         for j in range(0,2):                                                   #Columns
