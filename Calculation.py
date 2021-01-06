@@ -32,7 +32,6 @@ def spectrum_plot(hw_trans, cs_K_exc, cs_K_ion, cs_KL_ion, cs_KLL_ion,
     data_exp = np.genfromtxt(csv_file, delimiter = ',')
     hw_exp = data_exp[:,0]
     counts_exp = data_exp[:,1]
-    hw_exp
     spectrum.plot(hw_exp, counts_exp, 'ko', linewidth = .75, markersize = 3,
                   label = 'Experimental data', mfc='none')
 
@@ -47,7 +46,9 @@ def spectrum_plot(hw_trans, cs_K_exc, cs_K_ion, cs_KL_ion, cs_KLL_ion,
       spectrum.errorbar(hw_exp, counts_exp, yerr = counts_exp_err,
                         xerr = hw_exp_err, fmt = 'none', ecolor='k',
                         elinewidth = 0.5, capsize = 1, zorder=1)
-    except: counts_exp_err = np.ones(len(hw_exp))                              #For chi2 display without errors
+    except Exception as ex:
+      print('Could not load count error bars. Will be shown as zero. ' + ex)
+      counts_exp_err = np.ones(len(hw_exp))                                    #For chi2 display without errors
   else: exp_data = False
 
   x = np.arange(hw_min, hw_max, step)                                          #Domain arranged
@@ -66,16 +67,17 @@ def spectrum_plot(hw_trans, cs_K_exc, cs_K_ion, cs_KL_ion, cs_KLL_ion,
 
   #Domain search in the database
   try:
-    for i in range(len(hw_trans)):
+    for i in enumerate(hw_trans):
       if hw_trans[i,0] >= hw_min:
         trans_i = i
         break
-    for j in range(len(hw_trans)):
+    for j in enumerate(hw_trans):
       if hw_trans[-j-1,0] <= hw_max:
         trans_f = len(hw_trans)-j
         break
     hw_trans = hw_trans[trans_i:trans_f]
-  except:                                                                      #If it cannot load the database it will warn the user
+  except Exception as ex:                                                      #If it cannot load the database it will warn the user
+    print('Could not load the database. Exception: ' + ex)
     messagebox.showerror('Transition energies database', 'The transition ener'+
                          'gies database was incorrectly loaded. The calculati'+
                          'on will stop.')
@@ -98,12 +100,12 @@ def spectrum_plot(hw_trans, cs_K_exc, cs_K_ion, cs_KL_ion, cs_KLL_ion,
   counts_KLL_ion = []
   hw_KLL_ion = []
 
-  for i in range(len(hw_trans)):                                               #In all the energy transition it will try to attribute cs electronic combinations that will result in the initial position of the decay and then present the radiative decay yield
+  for i in enumerate(hw_trans):                                                #In all the energy transition it will try to attribute cs electronic combinations that will result in the initial position of the decay and then present the radiative decay yield
     #K-SHELL EXCITATION
     #--------------------------------------------------------------------------
     if kexc:
       if ground_state(hw_trans[i,5],0) == 1:                                   #If it is possible to have the energy state to be reached from a ground state position, then it will proceed, else, it will ask if it is a metastate
-        for j in range(len(cs_K_exc)):
+        for j in enumerate(cs_K_exc):
           if hw_trans[i,5] == cs_K_exc[j,2] and hw_trans[i,7] == cs_K_exc[j,4]:
             n_rate = integral(cs_K_exc[j,0], cs_K_exc[j,6], cs_K_exc[j,7],
                               fraction_mw)
@@ -116,7 +118,7 @@ def spectrum_plot(hw_trans, cs_K_exc, cs_K_ion, cs_KL_ion, cs_KLL_ion,
             hw_K_exc.append(i)                                                 #Append energy
 
       elif metastates:                                                         #Else wonder if there's a metastate
-        for j in range(len(cs_K_exc)):
+        for j in enumerate(cs_K_exc):
           if (cs_K_exc[j,-1] == hw_trans[i,0] and
               hw_trans[i,5] == cs_K_exc[j,2] and
               hw_trans[i,7] == cs_K_exc[j,4]):
@@ -124,8 +126,11 @@ def spectrum_plot(hw_trans, cs_K_exc, cs_K_ion, cs_KL_ion, cs_KLL_ion,
                               fraction_mw)
             hw = hw_trans[i,0]
             ty = hw_trans[i,4]
-            try: nq = csd.get(str(cs_K_exc[j,5])+'m') * 10**csd.get('power')
-            except: nq = 0
+            try:
+              nq = csd.get(str(cs_K_exc[j,5])+'m') * 10**csd.get('power')
+            except Exception as ex:
+              print('Could not obtain CSD. ' + ex)
+              nq = 0
 
             counts_K_exc.append(n_rate * hw * ty * nq)
             hw_K_exc.append(i)
@@ -136,7 +141,7 @@ def spectrum_plot(hw_trans, cs_K_exc, cs_K_ion, cs_KL_ion, cs_KLL_ion,
     #--------------------------------------------------------------------------
     if kion:                                                                   #Same rationale will be applied for the following processes
       if ground_state(hw_trans[i,5],1) == 1:
-        for j in range(len(cs_K_ion)):
+        for j in enumerate(cs_K_ion):
           if hw_trans[i,5] == cs_K_ion[j,2]:
             n_rate = integral(cs_K_ion[j,0], cs_K_ion[j,4], cs_K_ion[j,5],
                               fraction_mw)
@@ -150,7 +155,7 @@ def spectrum_plot(hw_trans, cs_K_exc, cs_K_ion, cs_KL_ion, cs_KLL_ion,
             hw_K_ion.append(i)
 
       elif metastates:                                                         #Else wonder if there's a metastate
-        for j in range(len(cs_K_ion)):
+        for j in enumerate(cs_K_ion):
           if (cs_K_ion[j,-1] == hw_trans[i,0] and
               hw_trans[i,5] == cs_K_ion[j,2]):
             n_rate = integral(cs_K_ion[j,0], cs_K_ion[j,4], cs_K_ion[j,5],
@@ -171,7 +176,7 @@ def spectrum_plot(hw_trans, cs_K_exc, cs_K_ion, cs_KL_ion, cs_KLL_ion,
     #--------------------------------------------------------------------------
     if klion:
       if ground_state(hw_trans[i,5],2) == 1:
-        for j in range(len(cs_KL_ion)):
+        for j in enumerate(cs_KL_ion):
           if hw_trans[i,5] == cs_KL_ion[j,2]:
             n_rate = integral(cs_KL_ion[j,0], cs_KL_ion[j,4], cs_KL_ion[j,5],
                               fraction_mw)
@@ -185,7 +190,7 @@ def spectrum_plot(hw_trans, cs_K_exc, cs_K_ion, cs_KL_ion, cs_KLL_ion,
             hw_KL_ion.append(i)
 
       elif metastates:                                                         #Else wonder if there's a metastate
-        for j in range(len(cs_KL_ion)):
+        for j in enumerate(cs_KL_ion):
           if (cs_KL_ion[j,-1] == hw_trans[i,0] and
               hw_trans[i,5] == cs_KL_ion[j,2]):
             n_rate = integral(cs_KL_ion[j,0], cs_KL_ion[j,4], cs_KL_ion[j,5],
@@ -206,7 +211,7 @@ def spectrum_plot(hw_trans, cs_K_exc, cs_K_ion, cs_KL_ion, cs_KLL_ion,
     #--------------------------------------------------------------------------
     if kllion:
       if ground_state(hw_trans[i,5],3) == 1:
-        for j in range(len(cs_KLL_ion)):
+        for j in enumerate(cs_KLL_ion):
           if hw_trans[i,5] == cs_KLL_ion[j,2]:
             n_rate = integral(cs_KLL_ion[j,0], cs_KLL_ion[j,4],
                               cs_KLL_ion[j,5], fraction_mw)
@@ -220,7 +225,7 @@ def spectrum_plot(hw_trans, cs_K_exc, cs_K_ion, cs_KL_ion, cs_KLL_ion,
             hw_KLL_ion.append(i)
 
       elif metastates:                                                         #Else wonder if there's a metastate
-        for j in range(len(cs_KLL_ion)):
+        for j in enumerate(cs_KLL_ion):
           if (cs_KLL_ion[j,-1] == hw_trans[i,0] and
               hw_trans[i,5] == cs_KLL_ion[j,2]):
             n_rate = integral(cs_KLL_ion[j,0], cs_KLL_ion[j,4],
@@ -240,22 +245,22 @@ def spectrum_plot(hw_trans, cs_K_exc, cs_K_ion, cs_KL_ion, cs_KLL_ion,
     #Simulation
     #--------------------------------------------------------------------------
     if kexc:
-      for i in range(len(hw_K_exc)):                                           #Profile making for K shell excitation
+      for i in enumerate(hw_K_exc):                                            #Profile making for K shell excitation
         voigt_K_exc_profile += voigt(counts_K_exc[i], x,
                                      hw_trans[hw_K_exc[i], 0] + hw0,
                                      width_gauss, width_loren, fraction_voigt)
     if kion:
-      for i in range(len(hw_K_ion)):                                           #Profile making for K shell ionization
+      for i in enumerate(hw_K_ion):                                            #Profile making for K shell ionization
         voigt_K_ion_profile += voigt(counts_K_ion[i], x,
                                      hw_trans[hw_K_ion[i], 0] + hw0,
                                      width_gauss, width_loren, fraction_voigt)
     if klion:
-      for i in range(len(hw_KL_ion)):                                          #Profile making for KL shells ionization
+      for i in enumerate(hw_KL_ion):                                           #Profile making for KL shells ionization
         voigt_KL_ion_profile += voigt(counts_KL_ion[i], x,
                                       hw_trans[hw_KL_ion[i], 0] + hw0,
                                       width_gauss, width_loren, fraction_voigt)
     if kllion:
-      for i in range(len(hw_KLL_ion)):                                         #Profile making for KLL shells ionization
+      for i in enumerate(hw_KLL_ion):                                          #Profile making for KLL shells ionization
         voigt_KLL_ion_profile += voigt(counts_KLL_ion[i], x,
                                        hw_trans[hw_KLL_ion[i], 0] + hw0,
                                        width_gauss, width_loren,
@@ -287,11 +292,11 @@ def spectrum_plot(hw_trans, cs_K_exc, cs_K_ion, cs_KL_ion, cs_KLL_ion,
     #Chi2 calculation and plotting
     #--------------------------------------------------------------------------
     if exp_data:
-      for i in range(len(hw_exp)):                                             #Restrict exp data to domain
+      for i in enumerate(hw_exp):                                              #Restrict exp data to domain
         if hw_exp[i] >= min(x):
           exp_i = i
           break
-      for j in range(len(hw_exp)):
+      for j in enumerate(hw_exp):
         if hw_exp[-j-1] <= max(x):
           exp_f = len(hw_exp) - j
           break
@@ -302,10 +307,10 @@ def spectrum_plot(hw_trans, cs_K_exc, cs_K_ion, cs_KL_ion, cs_KLL_ion,
       if y0_method == 'Chi':
         chi2_max = np.int(2e8)                                                 #High number. Will change to inf later.
         y = np.arange(min(counts_exp), np.average(counts_exp), step)
-        for j in range(len(y)):                                                #Minimizes chi2 based on different offsets y0
+        for j in enumerate(y):                                                 #Minimizes chi2 based on different offsets y0
           chi2 = np.int(0)
           spectrum_csd = voigt_profile + y[j]
-          for i in range(len(hw_exp)):
+          for i in enumerate(hw_exp):
             dif = abs(x - hw_exp[i])
             n = np.argmin(dif)
             chi2 += (spectrum_csd[n] - counts_exp[i])**2/(counts_exp_err[i]**2
@@ -325,7 +330,7 @@ def spectrum_plot(hw_trans, cs_K_exc, cs_K_ion, cs_KL_ion, cs_KLL_ion,
       else:
         spectrum_csd = voigt_profile + y0                                      #Profile w/ noise y0 set by the user, chi2 calculation proceeds
         chi2 = np.int(0)
-        for i in range(len(hw_exp)):
+        for i in enumerate(hw_exp):
           dif = abs(x - hw_exp[i])
           n = np.argmin(dif)
           chi2 += (spectrum_csd[n] - counts_exp[i])**2/(counts_exp_err[i]**2   #If there's no exp error, it will just divide by 1
@@ -384,25 +389,25 @@ def spectrum_plot(hw_trans, cs_K_exc, cs_K_ion, cs_KL_ion, cs_KLL_ion,
     #--------------------------------------------------------------------------
     if contributions:
       if kexc:
-        markerline,stemlines,baseline = (
+        markerline = (
             spectrum.stem(hw_trans[hw_K_exc, 0], counts_K_exc, bottom=None,
                           basefmt=' ', markerfmt='co',linefmt='c-',
                           label = 'K shell excitation contribution'))
         markerline.set_markerfacecolor('none')
       if kion:
-        markerline,stemlines,baseline = (
+        markerline = (
             spectrum.stem(hw_trans[hw_K_ion, 0], counts_K_ion, bottom=None,
                           basefmt=' ', markerfmt='bo',linefmt='b-',
                           label = 'K shell ionization contribution'))
         markerline.set_markerfacecolor('none')
       if klion:
-        markerline,stemlines,baseline = (
+        markerline = (
             spectrum.stem(hw_trans[hw_KL_ion, 0], counts_KL_ion, bottom=None,
                           basefmt=' ', markerfmt='go',linefmt='g-',
                           label = 'KL shells double ionization contribution'))
         markerline.set_markerfacecolor('none')
       if kllion:
-        markerline,stemlines,baseline = (
+        markerline = (
             spectrum.stem(hw_trans[hw_KLL_ion, 0], counts_KLL_ion, bottom=None,
                           basefmt=' ', markerfmt='yo',linefmt='y-',
                           label = 'KLL shells triple ionization contribution'))
@@ -415,13 +420,13 @@ def spectrum_plot(hw_trans, cs_K_exc, cs_K_ion, cs_KL_ion, cs_KLL_ion,
       counts_stem = []
       added = False
       if kexc:                                                                 #If kexc is considered, it adds without checking
-        for i in range(len(hw_K_exc)):
+        for i in enumerate(hw_K_exc):
           hw_stem.append(hw_K_exc[i])                                          #Adds index of the energy in the hw_trans database
           counts_stem.append(counts_K_exc[i])
       if kion:
-        for i in range(len(hw_K_ion)):
+        for i in enumerate(hw_K_ion):
           added = False
-          for j in range(len(hw_stem)):                                        #For the first energy value kw_K_ion, it searches if there's already one in the hw_stem
+          for j in enumerate(hw_stem):                                         #For the first energy value kw_K_ion, it searches if there's already one in the hw_stem
             if hw_K_ion[i] == hw_stem[j]:                                      #Once one is found, it adds to the counts and breaks out the loop
               counts_stem[j] += counts_K_ion[i]
               added = True                                                     #Now it informs that something was added
@@ -430,9 +435,9 @@ def spectrum_plot(hw_trans, cs_K_exc, cs_K_ion, cs_KL_ion, cs_KLL_ion,
             hw_stem.append(hw_K_ion[i])
             counts_stem.append(counts_K_ion[i])
       if klion:                                                                #Same thought process for the following considerations
-        for i in range(len(hw_KL_ion)):
+        for i in enumerate(hw_KL_ion):
           added = False
-          for j in range(len(hw_stem)):
+          for j in enumerate(hw_stem):
             if hw_KL_ion[i] == hw_stem[j]:
               counts_stem[j] += counts_KL_ion[i]
               added = True
@@ -441,9 +446,9 @@ def spectrum_plot(hw_trans, cs_K_exc, cs_K_ion, cs_KL_ion, cs_KLL_ion,
             hw_stem.append(hw_KL_ion[i])
             counts_stem.append(counts_KL_ion[i])
       if kllion:
-        for i in range(len(hw_KLL_ion)):
+        for i in enumerate(hw_KLL_ion):
           added = False
-          for j in range(len(hw_stem)):
+          for j in enumerate(hw_stem):
             if hw_KLL_ion[i] == hw_stem[j]:
               counts_stem[j] += counts_KLL_ion[i]
               added = True
@@ -452,10 +457,10 @@ def spectrum_plot(hw_trans, cs_K_exc, cs_K_ion, cs_KL_ion, cs_KLL_ion,
             hw_stem.append(hw_KLL_ion[i])
             counts_stem.append(counts_KLL_ion[i])
 
-      for i in range(len(hw_stem)):                                            #Converts index values to the energies in the transition database
+      for i in enumerate(hw_stem):                                             #Converts index values to the energies in the transition database
         hw_stem[i] = hw_trans[hw_stem[i], 0]
 
-      markerline,stemlines,baseline = (
+      markerline = (
           spectrum.stem(hw_stem, counts_stem, bottom=None, basefmt=' ',
                         markerfmt='ro',linefmt='r-', label = 'Stem plot'))
       markerline.set_markerfacecolor('none')
@@ -476,6 +481,5 @@ def spectrum_plot(hw_trans, cs_K_exc, cs_K_ion, cs_KL_ion, cs_KLL_ion,
   if scale == 'Log': spectrum.set_yscale('log')                                #If user input log
   fig.canvas.draw()
   #----------------------------------------------------------------------------
-  try: return spectrum_csd                                                     #Returns for Levenberg-Marquardt fit purposes
-  except: pass                                                                 #Sometimes it is not referenced so it passes
+  return spectrum_csd                                                          #Returns for Levenberg-Marquardt fit purposes
 #------------------------------------------------------------------------------
