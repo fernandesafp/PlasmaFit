@@ -18,9 +18,9 @@ from matplotlib.backends.backend_tkagg import (FigureCanvasTkAgg,
                                                NavigationToolbar2Tk)
 
 #André Fernandes 2018/2019
-from Load import dbloader                                                      #To load the databases
-from Calculation import spectrum_plot                                          #To use functions for the plotting
-from LMFit import LM_spectrum_plot                                             #To perform the LM fit
+from Modules.Load import dbloader                                                      #To load the databases
+from Modules.Calculation import spectrum_plot                                          #To use functions for the plotting
+from Modules.LMFit import LM_spectrum_plot                                             #To perform the LM fit
 from mpl_toolkits.axes_grid1.inset_locator import inset_axes                   #To have a subplot in the corner of the main plot
 
 #Global variable for the mouse click coordinates
@@ -765,7 +765,7 @@ if __name__ == "__main__":
         return                                                                 #Solved a loop messagebox error
       csd_changed.set(True)
 
-      for j in enumerate(rows):
+      for j in range(len(rows)):
         csd[val[3*j]] = val[3*j+1]
         fixed[val[3*j]] = val[3*j+2]
       ask_plot()
@@ -787,7 +787,7 @@ if __name__ == "__main__":
       rows.append(items)
 
     def delete_row():
-      for rowno, row in reversed(list(enumerate(rows))):
+      for rowno, row in reversed(list(range(len(rows)))):
         for i in row:
           i.destroy()
         rows.pop(rowno)
@@ -796,7 +796,7 @@ if __name__ == "__main__":
     def redo_form():
       global csd, csd_standard
       csd = csd_standard
-      for rowno, row in reversed(list(enumerate(rows))):
+      for rowno, row in reversed(list(range(len(rows)))):
         for i in row:
           i.destroy()
         rows.pop(rowno)
@@ -810,7 +810,7 @@ if __name__ == "__main__":
       fixeds = list(fixed_standard.values())
       rows = []
       power = []
-      for k in enumerate(ions):
+      for k in range(len(ions)):
         i=i+1
         items = []
         for j in range(0,2):                                                   #Columns
@@ -1007,17 +1007,17 @@ if __name__ == "__main__":
   ttk.Button(master=buttons_frame3, text='Help', command=_help
              ).pack(side=BOTTOM)
   ttk.Button(master=buttons_frame3, text='Export fit',
-             command=write_to_xls()).pack(side=BOTTOM)                  #To do
+             command=lambda:write_to_xls()).pack(side=BOTTOM)                  #To do
   ttk.Button(master=buttons_frame3, text='Intensity dist.', command=load_tf
              ).pack(side=BOTTOM)
   ttk.Button(master=buttons_frame3, text='Load exp. file', command=load_data
              ).pack(side=BOTTOM)
 
   ttk.Button(master=buttons_frame2, text='Calculate',
-             command=plotting(),style='red/black.TButton'
+             command=lambda:plotting(),style='red/black.TButton'
              ).pack(side=BOTTOM)
   ttk.Button(master=buttons_frame2, text='LM fit',
-             command=LM_plotting(), style= 'red/black.TButton'
+             command=lambda:LM_plotting(), style= 'red/black.TButton'
              ).pack(side=BOTTOM)
 
   ttk.Button(master=buttons_frame2, text='Clear plot', command = clear,
