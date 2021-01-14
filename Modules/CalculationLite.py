@@ -9,7 +9,7 @@ Calculates Spectrum charge-state density for LM fit
 
 import numpy as np
 
-from Functions import integral, stat_prob, ground_state, voigt
+from Modules.Functions import integral, stat_prob, ground_state, voigt
 from scipy.interpolate import interp1d                                         #To do the transfer function fit
 
 
@@ -49,12 +49,12 @@ def spectrum_plot_lite(data, counts_exp_err, x, y0, hw_trans, cs_K_exc,
   counts_KLL_ion = []
   hw_KLL_ion = []
 
-  for i in enumerate(hw_trans):                                                #In all the energy transition it will try to attribute cs electronic combinations that will result in the initial position of the decay and then present the radiative decay yield
+  for i in range(len(hw_trans)):                                               #In all the energy transition it will try to attribute cs electronic combinations that will result in the initial position of the decay and then present the radiative decay yield
     #K-SHELL EXCITATION
     #--------------------------------------------------------------------------
     if kexc:
       if ground_state(hw_trans[i,5],0) == 1:                                   #If it is possible to have the energy state to be reached from a ground state position, then it will proceed, else, it will ask if it is a metastate
-        for j in enumerate(cs_K_exc):
+        for j in range(len(cs_K_exc)):
           if hw_trans[i,5] == cs_K_exc[j,2] and hw_trans[i,7] == cs_K_exc[j,4]:
             n_rate = integral(cs_K_exc[j,0], cs_K_exc[j,6], cs_K_exc[j,7],
                               fraction_mw)
@@ -70,7 +70,7 @@ def spectrum_plot_lite(data, counts_exp_err, x, y0, hw_trans, cs_K_exc,
             hw_K_exc.append(i)                                                 #Append energy
 
       elif metastates:                                                         #Else wonder if there's a metastate
-        for j in enumerate(cs_K_exc):
+        for j in range(len(cs_K_exc)):
           if (cs_K_exc[j,-1] == hw_trans[i,0] and
               hw_trans[i,5] == cs_K_exc[j,2] and
               hw_trans[i,7] == cs_K_exc[j,4]):
@@ -90,7 +90,7 @@ def spectrum_plot_lite(data, counts_exp_err, x, y0, hw_trans, cs_K_exc,
     #--------------------------------------------------------------------------
     if kion:                                                                   #Same rationale will be applied for the following processes
       if ground_state(hw_trans[i,5],1) == 1:
-        for j in enumerate(cs_K_ion):
+        for j in range(len(cs_K_ion)):
           if hw_trans[i,5] == cs_K_ion[j,2]:
             n_rate = integral(cs_K_ion[j,0], cs_K_ion[j,4], cs_K_ion[j,5],
                               fraction_mw)
@@ -104,7 +104,7 @@ def spectrum_plot_lite(data, counts_exp_err, x, y0, hw_trans, cs_K_exc,
             hw_K_ion.append(i)
 
       elif metastates:                                                         #Else wonder if there's a metastate
-        for j in enumerate(cs_K_ion):
+        for j in range(len(cs_K_ion)):
           if (cs_K_ion[j,-1] == hw_trans[i,0] and
               hw_trans[i,5] == cs_K_ion[j,2]):
             n_rate = integral(cs_K_ion[j,0], cs_K_ion[j,4], cs_K_ion[j,5],
@@ -125,7 +125,7 @@ def spectrum_plot_lite(data, counts_exp_err, x, y0, hw_trans, cs_K_exc,
     #--------------------------------------------------------------------------
     if klion:
       if ground_state(hw_trans[i,5],2) == 1:
-        for j in enumerate(cs_KL_ion):
+        for j in range(len(cs_KL_ion)):
           if hw_trans[i,5] == cs_KL_ion[j,2]:
             n_rate = integral(cs_KL_ion[j,0], cs_KL_ion[j,4], cs_KL_ion[j,5],
                               fraction_mw)
@@ -139,7 +139,7 @@ def spectrum_plot_lite(data, counts_exp_err, x, y0, hw_trans, cs_K_exc,
             hw_KL_ion.append(i)
 
       elif metastates:                                                         #Else wonder if there's a metastate
-        for j in enumerate(cs_KL_ion):
+        for j in range(len(cs_KL_ion)):
           if (cs_KL_ion[j,-1] == hw_trans[i,0] and
               hw_trans[i,5] == cs_KL_ion[j,2]):
             n_rate = integral(cs_KL_ion[j,0], cs_KL_ion[j,4], cs_KL_ion[j,5],
@@ -160,7 +160,7 @@ def spectrum_plot_lite(data, counts_exp_err, x, y0, hw_trans, cs_K_exc,
     #--------------------------------------------------------------------------
     if kllion:
       if ground_state(hw_trans[i,5],3) == 1:
-        for j in enumerate(cs_KLL_ion):
+        for j in range(len(cs_KLL_ion)):
           if hw_trans[i,5] == cs_KLL_ion[j,2]:
             n_rate = integral(cs_KLL_ion[j,0], cs_KLL_ion[j,4],
                               cs_KLL_ion[j,5], fraction_mw)
@@ -174,7 +174,7 @@ def spectrum_plot_lite(data, counts_exp_err, x, y0, hw_trans, cs_K_exc,
             hw_KLL_ion.append(i)
 
       elif metastates:                                                         #Else wonder if there's a metastate
-        for j in enumerate(cs_KLL_ion):
+        for j in range(len(cs_KLL_ion)):
           if (cs_KLL_ion[j,-1] == hw_trans[i,0] and
               hw_trans[i,5] == cs_KLL_ion[j,2]):
             n_rate = integral(cs_KLL_ion[j,0], cs_KLL_ion[j,4],
@@ -193,22 +193,22 @@ def spectrum_plot_lite(data, counts_exp_err, x, y0, hw_trans, cs_K_exc,
   #Simulation
   #----------------------------------------------------------------------------
   if kexc:
-    for i in enumerate(hw_K_exc):                                              #Profile making for K shell excitation
+    for i in range(len(hw_K_exc)):                                             #Profile making for K shell excitation
       voigt_K_exc_profile += voigt(counts_K_exc[i], x,
                                    hw_trans[hw_K_exc[i], 0] + hw0,
                                    width_gauss, width_loren, fraction_voigt)
   if kion:
-    for i in enumerate(hw_K_ion):                                              #Profile making for K shell ionization
+    for i in range(len(hw_K_ion)):                                             #Profile making for K shell ionization
       voigt_K_ion_profile += voigt(counts_K_ion[i], x,
                                    hw_trans[hw_K_ion[i], 0] + hw0,
                                    width_gauss, width_loren, fraction_voigt)
   if klion:
-    for i in enumerate(hw_KL_ion):                                             #Profile making for KL shells ionization
+    for i in range(len(hw_KL_ion)):                                            #Profile making for KL shells ionization
       voigt_KL_ion_profile += voigt(counts_KL_ion[i], x,
                                     hw_trans[hw_KL_ion[i], 0] + hw0,
                                     width_gauss, width_loren, fraction_voigt)
   if kllion:
-    for i in enumerate(hw_KLL_ion):                                            #Profile making for KLL shells ionization
+    for i in range(len(hw_KLL_ion)):                                           #Profile making for KLL shells ionization
       voigt_KLL_ion_profile += voigt(counts_KLL_ion[i], x,
                                      hw_trans[hw_KLL_ion[i], 0] + hw0,
                                      width_gauss, width_loren,
@@ -227,11 +227,11 @@ def spectrum_plot_lite(data, counts_exp_err, x, y0, hw_trans, cs_K_exc,
   #Chi2 calculation and plotting
   #----------------------------------------------------------------------------
   if y0_method == 'Chi':
-    for i in enumerate(data[0]):                                               #Restrict exp data to domain
+    for i in range(len(data[0])):                                              #Restrict exp data to domain
       if data[0][i] >= min(x):
         exp_i = i
         break
-    for j in enumerate(data[0]):
+    for j in range(len(data[0])):
       if data[0][-j-1] <= max(x):
         exp_f = len(data[0]) - j
         break
@@ -240,10 +240,10 @@ def spectrum_plot_lite(data, counts_exp_err, x, y0, hw_trans, cs_K_exc,
     counts_exp_err = counts_exp_err[exp_i:exp_f]
 
     chi2_max = np.int(2e8)                                                     #High number. Will change to inf later.
-    for j in enumerate(y):                                                     #Minimizes chi2 based on different offsets y0
+    for j in range(len(y)):                                                    #Minimizes chi2 based on different offsets y0
       chi2 = np.int(0)
       spectrum_csd = voigt_profile + y[j]
-      for i in enumerate(data[0]):
+      for i in range(len(data[0])):
         dif = abs(x - data[0][i])
         n = np.argmin(dif)
         chi2 += (spectrum_csd[n] - data[1][i])**2/(counts_exp_err[i]**2

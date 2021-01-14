@@ -9,8 +9,8 @@ Plots a spectrum with LM fit
 
 import numpy as np
 from lmfit import minimize, Parameters, report_fit
-from Calculation import spectrum_plot
-from CalculationLite import spectrum_plot_lite
+from Modules.Calculation import spectrum_plot
+from Modules.CalculationLite import spectrum_plot_lite
 from tkinter import messagebox
 
 def LM_spectrum_plot(hw_trans, cs_K_exc, cs_K_ion, cs_KL_ion, cs_KLL_ion,
@@ -44,7 +44,7 @@ def LM_spectrum_plot(hw_trans, cs_K_exc, cs_K_ion, cs_KL_ion, cs_KLL_ion,
   #----------------------------------------------------------------------------
 
   params = Parameters()
-  for i in enumerate(ions):
+  for i in range(len(ions)):
     #params.add('nq' + ions[i], value = csds[i], min = csds[i] * .5,
      #          max = csds[i] * 2, vary = not fixeds[i])                       #Added limit of 10 times the cds guess value or 10% because sometimes it would go to really high values
     params.add('nq' + ions[i], value = csds[i], min = 0,#csds[i] * .5,         #Removed the max limit because restrictions are bad for computation time
@@ -62,11 +62,11 @@ def LM_spectrum_plot(hw_trans, cs_K_exc, cs_K_ion, cs_KL_ion, cs_KLL_ion,
     print('Could not load count error bars. Will be shown as the square root of experimental counts. ' + ex)
     counts_exp_err = np.sqrt(counts_exp)
 
-  for i in enumerate(hw_exp):                                                  #Restrict exp data to domain
+  for i in range(len(hw_exp)):                                                 #Restrict exp data to domain
     if hw_exp[i] >= min(x):
       exp_i = i
       break
-  for j in enumerate(hw_exp):
+  for j in range(len(hw_exp)):
     if hw_exp[-j-1] <= max(x):
       exp_f = len(hw_exp) - j
       break
@@ -82,11 +82,11 @@ def LM_spectrum_plot(hw_trans, cs_K_exc, cs_K_ion, cs_KL_ion, cs_KLL_ion,
 
   #Domain search in the database
   try:
-    for i in enumerate(hw_trans):
+    for i in range(len(hw_trans)):
       if hw_trans[i,0] >= hw_min:
         trans_i = i
         break
-    for j in enumerate(hw_trans):
+    for j in range(len(hw_trans)):
       if hw_trans[-j-1,0] <= hw_max:
         trans_f = len(hw_trans)-j
         break
