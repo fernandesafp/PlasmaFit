@@ -100,7 +100,7 @@ def spectrum_plot(hw_trans, cs_K_exc, cs_K_ion, cs_KL_ion, cs_KLL_ion,
   counts_KLL_ion = []
   hw_KLL_ion = []
 
-  for i in range(len(hw_trans)):                                                #In all the energy transition it will try to attribute cs electronic combinations that will result in the initial position of the decay and then present the radiative decay yield
+  for i in range(len(hw_trans)):                                               #In all the energy transition it will try to attribute cs electronic combinations that will result in the initial position of the decay and then present the radiative decay yield
     #K-SHELL EXCITATION
     #--------------------------------------------------------------------------
     if kexc:
