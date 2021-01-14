@@ -18,9 +18,9 @@ from matplotlib.backends.backend_tkagg import (FigureCanvasTkAgg,
                                                NavigationToolbar2Tk)
 
 #André Fernandes 2018/2019
-from Modules.Load import dbloader                                                      #To load the databases
-from Modules.Calculation import spectrum_plot                                          #To use functions for the plotting
-from Modules.LMFit import LM_spectrum_plot                                             #To perform the LM fit
+from Modules.Load import dbloader                                              #To load the databases
+from Modules.Calculation import spectrum_plot                                  #To use functions for the plotting
+from Modules.LMFit import LM_spectrum_plot                                     #To perform the LM fit
 from mpl_toolkits.axes_grid1.inset_locator import inset_axes                   #To have a subplot in the corner of the main plot
 
 #Global variable for the mouse click coordinates
